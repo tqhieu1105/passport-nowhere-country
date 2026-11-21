@@ -134,6 +134,32 @@ for (let y = 45; y < 835; y += 19) for (let page = 0; page < 2; page++) {
     line(px, py, x, yy, '#e7e3d7', 1); px = x; py = yy;
   }
 }
+// Guilloche rosettes and interlaced waves, printed beneath the document text.
+// The low-contrast linework reads as security stock without obscuring fields.
+for (let page = 0; page < 2; page++) {
+  const left = page ? 526 : 38, right = page ? 990 : 500;
+  for (let band = 0; band < 5; band++) {
+    const cy = 194 + band * 139;
+    for (let ring = 0; ring < 3; ring++) {
+      let px = left, py = cy;
+      for (let x = left; x <= right; x += 3) {
+        const t = (x - left) / (right - left) * Math.PI * 8;
+        const yy = cy + Math.sin(t + ring * 0.7) * (5 + ring * 3) + Math.sin(t * 2.15 + band) * 2;
+        line(px, py, x, yy, '#efecdf', 1); px = x; py = yy;
+      }
+    }
+  }
+  // Fine concentric rosettes in the otherwise open outer corners.
+  const cx = page ? 952 : 69, cy = 777;
+  for (let r = 10; r <= 34; r += 4) {
+    let px = cx + r, py = cy;
+    for (let a = 0.08; a <= Math.PI * 2 + 0.08; a += 0.08) {
+      const wobble = 1.8 * Math.sin(a * 12);
+      const x = cx + (r + wobble) * Math.cos(a), y = cy + (r + wobble) * Math.sin(a);
+      line(px, py, x, y, '#eae7da', 1); px = x; py = y;
+    }
+  }
+}
 
 // Left leaf: identity page
 // Circular seal and its topographic winter-pass symbol.
@@ -142,13 +168,16 @@ poly([[258, 80], [266, 68], [272, 77], [280, 64], [287, 80]], ink);
 line(257, 83, 287, 83, ink, 1);
 centerText('THE CANTONS OF TALVEN', 272, 103, 3, ink, 1);
 centerText('KANTONE TALVEN  |  PASSPORT', 272, 128, 1, muted, 2);
-line(49, 151, 495, 151, ink, 2); line(49, 155, 495, 155, '#b2b7a7', 1);
+centerText('TALVANI  |  PASERA TALVENA', 272, 140, 1, muted, 2);
+line(49, 153, 495, 153, ink, 2); line(49, 157, 495, 157, '#b2b7a7', 1);
 
 // Identification photograph: Ilva Ren, a ventilation technician of Upper Keld.
-rect(54, 172, 154, 199, '#cbd4cd'); frame(54, 172, 154, 199, ink, 2);
+rect(57, 175, 154, 199, '#b5c1bc'); rect(54, 172, 154, 199, '#cbd4cd'); frame(54, 172, 154, 199, ink, 2);
 // Hazy gallery lights and vertical architectural lines in the photo backdrop.
 rect(58, 176, 146, 191, '#c4d0ca');
 for (let x = 65; x < 202; x += 23) line(x, 178, x - 4, 364, '#b7c5bf', 1);
+// Soft reflected window light and shadow at the edge of the portrait.
+for (let i = 0; i < 8; i++) line(60 + i * 3, 180, 60 + i * 3, 363, '#c8d2cd', 1);
 ellipse(102, 221, 15, 15, '#e0e4d9'); ellipse(162, 242, 10, 10, '#e0e4d9');
 // Shoulders and dark work coat.
 poly([[64, 358], [68, 330], [78, 316], [91, 309], [108, 305], [127, 310], [145, 313], [167, 324], [180, 343], [185, 368], [64, 368]], '#23383b');
@@ -159,8 +188,14 @@ ellipse(122, 238, 39, 53, '#302b29'); ellipse(153, 256, 15, 20, '#302b29');
 // Face, ears and hairline.
 ellipse(87, 249, 6, 11, '#b77d64'); ellipse(158, 249, 6, 11, '#b77d64');
 ellipse(123, 248, 32, 43, '#d2a184');
+poly([[144, 235], [154, 238], [153, 267], [145, 278], [139, 267]], '#c18e75');
+ellipse(112, 238, 13, 24, '#d8ad91');
 poly([[91, 231], [93, 208], [109, 194], [131, 195], [151, 211], [157, 235], [146, 222], [137, 213], [119, 218], [105, 214]], '#302b29');
+// Individually swept strands give the vector hair directional texture.
+for (let i = 0; i < 7; i++) line(98 + i * 7, 211 - (i % 3) * 2, 111 + i * 5, 201 + (i % 2) * 3, '#52433b', 1);
+for (let i = 0; i < 4; i++) line(153 + i, 237 + i * 5, 164 + i * 2, 246 + i * 5, '#473a34', 1);
 // Brows, eyes, nose and a quiet neutral mouth.
+ellipse(109, 261, 8, 3, '#dcae91'); ellipse(139, 262, 8, 3, '#dcae91');
 line(101, 242, 114, 241, '#493831', 2); line(132, 241, 145, 243, '#493831', 2);
 line(102, 250, 114, 250, '#f1e4d2', 3); line(132, 251, 144, 252, '#f1e4d2', 3);
 ellipse(109, 250, 2, 3, '#26302f'); ellipse(138, 251, 2, 3, '#26302f');
@@ -196,11 +231,13 @@ text('UPPER KELD VENTILATION SERVICE', 64, 492, 1, ink);
 text('GALLERY TECHNICIAN  -  GUILD 17', 64, 507, 1, ink);
 text('WINTER BERTH REGISTERED ON PAGE 03', 64, 522, 1, ink);
 
-// A low-contrast duplicate portrait security mark, kept clear of the data.
-ellipse(452, 641, 43, 43, '#e4e4d8', false, 2); ellipse(452, 641, 37, 37, '#e9e8dd', false, 1);
-ellipse(452, 634, 13, 17, '#e2e3d8');
-poly([[427, 674], [432, 658], [443, 649], [461, 649], [472, 659], [477, 674]], '#e2e3d8');
-text('TLV  -  05', 54, 606, 1, '#8b9588');
+// A faint ghost portrait security watermark, identifiable but behind the data.
+ellipse(451, 641, 47, 47, '#e8e6db', false, 2); ellipse(451, 641, 40, 40, '#ebe9de', false, 1);
+ellipse(451, 635, 17, 21, '#e5e4d8');
+ellipse(439, 634, 5, 9, '#e5e4d8'); ellipse(463, 634, 5, 9, '#e5e4d8');
+poly([[426, 679], [431, 659], [439, 651], [451, 648], [463, 651], [472, 659], [477, 679]], '#e5e4d8');
+poly([[435, 622], [437, 613], [445, 608], [455, 608], [465, 615], [468, 628], [460, 620], [451, 621], [442, 618]], '#e3e2d6');
+text('TLV  -  05  -  TV0626418', 54, 606, 1, '#8b9588');
 centerText('PERSONAL DOCUMENT  |  RETURN TO A TALVEN REGISTRY', 272, 805, 1, muted, 1);
 line(49, 825, 495, 825, '#b4b8a9', 1);
 
@@ -218,61 +255,86 @@ centerText(mrz1, 276, 877, 1.5, '#172826', 2);
 centerText(mrz2, 276, 906, 1.5, '#172826', 2);
 centerText('2', 54, 976, 1, muted, 0);
 
-// Right leaf: border-control history and the seasonal domicile endorsement.
+// Right leaf: border-control history, a neighbouring visa and seasonal record.
 text('VISAS AND BORDER CONTROL', 543, 50, 3, ink, 0);
-text('VISAER  |  STAMPS  |  PAGE 03', 544, 77, 1, muted, 2);
-line(542, 96, 977, 96, ink, 2);
-text('ENTRY / EXIT RECORD  -  NEIGHBOURING STATES', 544, 108, 1, muted, 1);
+text('VISAER  |  STAMPS  |  PAGE 03', 544, 75, 1, muted, 2);
+text('TALVANI  |  VISAJA KONTROLA', 544, 89, 1, muted, 2);
+line(542, 105, 977, 105, ink, 2);
+text('ENTRY / EXIT RECORD  -  NEIGHBOURING STATES', 544, 113, 1, muted, 1);
 
 function stamp(x: number, y: number, country: string, action: string, port: string, date: string, color: string, code: string) {
-  // Four stamps have equal stock, border weight, and type hierarchy.
-  rect(x + 1, y + 3, 207, 116, '#eee9dc');
-  frame(x, y, 207, 116, color, 2); frame(x + 5, y + 5, 197, 106, color, 1);
+  // Paired rectangular entry/exit marks retain the actual border dates.
+  rect(x + 1, y + 3, 207, 96, '#eee9dc');
+  frame(x, y, 207, 96, color, 2); frame(x + 5, y + 5, 197, 86, color, 1);
   ellipse(x + 19, y + 18, 8, 8, color, false, 1);
   poly([[x + 13, y + 20], [x + 19, y + 11], [x + 25, y + 20]], color);
-  centerText(country, x + 112, y + 13, 2, color, 2);
-  centerText(action, x + 112, y + 39, 1, ink, 2);
-  line(x + 14, y + 56, x + 193, y + 56, '#c7c4b8', 1);
-  centerText(date, x + 104, y + 65, 2, color, 1);
-  centerText(port, x + 104, y + 89, 1, ink, 2);
-  text(code, x + 11, y + 96, 1, muted, 0);
+  centerText(country, x + 112, y + 9, 2, color, 2);
+  centerText(action, x + 112, y + 31, 1, ink, 2);
+  line(x + 14, y + 45, x + 193, y + 45, '#c7c4b8', 1);
+  centerText(date, x + 104, y + 53, 1, color, 1);
+  centerText(port, x + 104, y + 73, 1, ink, 2);
+  text(code, x + 11, y + 82, 1, muted, 0);
 }
-stamp(544, 132, 'ORDEL', 'ARRIVAL', 'MOSS GATE', '18 JUN 2025', blue, 'OD-04');
-stamp(766, 132, 'ORDEL', 'DEPARTURE', 'MOSS GATE', '22 JUN 2025', red, 'OD-04');
-stamp(544, 261, 'SARN', 'ARRIVAL', 'HIGH STEPS', '03 OCT 2025', green, 'SR-11');
-stamp(766, 261, 'SARN', 'DEPARTURE', 'HIGH STEPS', '08 OCT 2025', blue, 'SR-11');
+stamp(544, 131, 'ORDEL', 'ARRIVAL', 'MOSS GATE', '18 JUN 2025', blue, 'OD-04');
+stamp(766, 131, 'ORDEL', 'DEPARTURE', 'MOSS GATE', '22 JUN 2025', red, 'OD-04');
+stamp(544, 235, 'SARN', 'ARRIVAL', 'HIGH STEPS', '03 OCT 2025', green, 'SR-11');
+stamp(766, 235, 'SARN', 'DEPARTURE', 'HIGH STEPS', '08 OCT 2025', blue, 'SR-11');
 
-// A clear, practical visa/endorsement panel explains Talven's seasonal housing.
-rect(544, 405, 433, 283, '#f0eddf'); frame(544, 405, 433, 283, ink, 1);
-rect(544, 405, 433, 26, ink);
-text('SEASONAL DOMICILE  /  WINTER ENDORSEMENT', 554, 410, 2, '#f7f2e4', 0);
-label('REGISTER OF INHABITED GALLERIES', 558, 446);
-line(558, 460, 962, 460, '#bcc0b2', 1);
-label('REGISTERED HOLDER', 558, 473); label('DOMICILE', 768, 473);
-val('ILVA REN', 558, 486, 1); val('GALLERY 04', 768, 486, 1);
-label('BERTH', 558, 511); label('CANTON', 768, 511);
-val('BAY 118', 558, 524, 1); val('UPPER KELD', 768, 524, 1);
-label('VALID FOR THE LOWER WINTER QUARTER', 558, 550);
-val('01 NOV 2025  -  30 APR 2026', 558, 565, 1, green);
-line(558, 584, 962, 584, '#bcc0b2', 1);
-text('A WARMED GALLERY BERTH IS A LEGAL ADDRESS.', 558, 596, 1, ink);
-text('RECORD YOUR BAY BEFORE THE FIRST FROST.', 558, 612, 1, ink);
-text('PRESENT THIS PAGE AT ANY AIRLOCK REGISTRY.', 558, 628, 1, ink);
-text('ISSUED KELD  -  14 OCT 2025  -  REF 04/118', 558, 657, 1, muted);
+function roundStamp(cx: number, cy: number, country: string, line1: string, line2: string, date: string, color: string) {
+  ellipse(cx + 2, cy + 2, 47, 43, '#e8e2d5');
+  ellipse(cx, cy, 47, 43, color, false, 2); ellipse(cx, cy, 41, 37, color, false, 1);
+  centerText(country, cx, cy - 25, 1, color, 1);
+  line(cx - 31, cy - 13, cx + 31, cy - 13, color, 1);
+  centerText(line1, cx, cy - 6, 1, color, 0);
+  centerText(line2, cx, cy + 6, 1, color, 0);
+  centerText(date, cx, cy + 20, 1, color, 0);
+}
+roundStamp(646, 383, 'TALVEN', 'WINTER GALLERY', 'BERTH 118', '01 NOV 2025', green);
+roundStamp(872, 383, 'TALVEN', 'GALLERY RELEASE', 'LOWER QUARTER', '30 APR 2026', red);
 
-// Fee impression, later than both neighbouring journeys.
-ellipse(899, 753, 52, 52, red, false, 2); ellipse(899, 753, 45, 45, red, false, 1);
-centerText('BERTH FEE', 899, 726, 1, red, 1);
-centerText('PAID  6 LYR', 899, 745, 1, red, 1);
-centerText('14 OCT 2025', 899, 764, 1, red, 1);
-centerText('KELD REGISTRY', 899, 783, 1, red, 1);
-// Binding / property line, page number and quiet security whorl.
-ellipse(590, 781, 28, 28, '#e5e4d8', false, 2); ellipse(590, 781, 20, 20, '#e5e4d8', false, 1);
-for (let i = 0; i < 6; i++) line(564, 782 + i * 3, 616, 782 + i * 3, '#e5e4d8', 1);
-text('THIS PASSPORT REMAINS THE PROPERTY OF THE CANTONS OF TALVEN.', 544, 829, 1, muted);
-text('IF FOUND, RETURN TO THE KELD REGISTRY OF PERSONS.', 544, 845, 1, muted);
-line(542, 868, 977, 868, '#b5b9aa', 1);
-centerText('REPUBLICAN SERVICE  -  TALVEN REGISTRY  -  2024', 759, 888, 1, muted, 1);
+// The domicile endorsement carries Talven's winter gallery residency rule.
+rect(544, 432, 433, 134, '#f0eddf'); frame(544, 432, 433, 134, green, 1);
+rect(544, 432, 433, 20, green);
+text('SEASONAL DOMICILE  /  WINTER ENDORSEMENT', 552, 437, 1, '#f7f2e4', 1);
+text('REGISTERED HOLDER  ILVA REN', 554, 461, 1, ink, 1);
+text('GALLERY 04  /  BAY 118  /  UPPER KELD', 554, 476, 1, ink, 1);
+text('VALID  01 NOV 2025  -  30 APR 2026', 554, 492, 1, green, 1);
+line(554, 506, 967, 506, '#bcc0b2', 1);
+text('A WARMED GALLERY BERTH IS A LEGAL ADDRESS.', 554, 515, 1, ink, 1);
+text('REGISTER BEFORE FIRST FROST  /  AIRLOCK 04', 554, 530, 1, ink, 1);
+text('ISSUED KELD  -  14 OCT 2025  -  REF 04/118', 554, 547, 1, muted, 1);
+
+// Complete Ordel visitor visa: serial, period, class, remarks and barcode.
+rect(544, 579, 433, 253, '#eee8d7'); frame(544, 579, 433, 253, blue, 2); frame(550, 585, 421, 241, blue, 1);
+rect(550, 585, 421, 26, blue);
+text('ORDEL  /  VISITOR VISA  /  VISADO', 561, 591, 2, '#f7f2e4', 1);
+text('CLASS C  -  SINGLE ENTRY', 562, 620, 1, ink, 1);
+text('NO. OV-25-061047  /  HOLDER ILVA REN', 562, 636, 1, ink, 1);
+line(560, 650, 961, 650, '#b4b9af', 1);
+text('VALID FROM', 562, 661, 1, muted, 1); text('UNTIL', 766, 661, 1, muted, 1);
+text('10 JUN 2025', 562, 674, 1, blue, 1); text('23 JUN 2025', 766, 674, 1, blue, 1);
+text('PLACE  MOSS GATE  /  PERMITTED STAY  14 DAYS', 562, 692, 1, ink, 1);
+line(560, 706, 961, 706, '#b4b9af', 1);
+text('REMARKS  WINTER GALLERY TECHNICIAN.', 562, 716, 1, ink, 1);
+text('REGISTER A WARMED BERTH BEFORE FIRST FROST.', 562, 731, 1, ink, 1);
+text('AUTHORITY  ORDEL BORDER OFFICE  /  10 JUN 2025', 562, 748, 1, muted, 1);
+// Deterministic machine-readable barcode with quiet zones and human-readable key.
+const barcode = 'OV25061047';
+let bx = 566;
+for (let i = 0; i < barcode.length; i++) {
+  const n = barcode.charCodeAt(i);
+  for (let bit = 0; bit < 7; bit++) {
+    const barW = ((n >> bit) & 1) ? 3 : 1;
+    rect(bx, 768, barW, 43, ink); bx += barW + 1;
+  }
+  bx += 2;
+}
+text(barcode, bx + 10, 785, 1, ink, 1);
+// Binding / property line and page number.
+text('THIS PASSPORT REMAINS THE PROPERTY OF THE CANTONS OF TALVEN.', 544, 848, 1, muted);
+text('IF FOUND, RETURN TO THE KELD REGISTRY OF PERSONS.', 544, 864, 1, muted);
+line(542, 882, 977, 882, '#b5b9aa', 1);
+centerText('REPUBLICAN SERVICE  -  TALVEN REGISTRY  -  2024', 759, 896, 1, muted, 1);
 centerText('3', 976, 976, 1, muted, 0);
 
 // PNG writer using only Node built-ins.
